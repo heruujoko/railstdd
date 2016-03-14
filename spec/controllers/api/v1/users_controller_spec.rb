@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Api::V1::UsersController do
+
 	before(:each) {request.headers['Accept'] = 'applicatiion/vnd.marketplace.v1'}
 
 	describe "GET #show" do
@@ -48,4 +49,49 @@ describe Api::V1::UsersController do
 			it { should respond_with 422 }
 		end	
 	end	
-end
+
+	describe "PUT/PATCH #update" do
+		
+		context "when is successfully updated"
+			
+			before(:each) do
+				@user = FactoryGirl.create :user
+				patch :update, {
+					id: @user.id,
+					user: {
+						email: 'newupdatedemail@gmail.com'
+					}
+				}, format: :json
+			end			
+
+			it "renders the json representation for the updated user" do
+				user_response = JSON.parse(response.body , symbolize_names: true)
+				expect(user_response[:email]).to eql 'newupdatedemail@gmail.com'
+			end	
+		end
+
+		context "when is not created" do
+			before(:each) do
+				@user = FactoryGirl.create :user
+				patch :update , {
+					id: @user.id,
+					user: {
+						email: "bademail.com"
+					}
+				}, format: :json
+			end
+
+			it "renders an errors json" do 
+				user_response = JSON.parse(response.body, symbolize_names: true)
+				expect(user_response).to have_key(:errors) 
+			end	
+
+			it "render the json errors on why user could not be updated" do
+				user_response = JSON.parse(response.body, symbolize_names: true)
+				expect(user_response[:errors][:email]).to include "is invalid"
+			end
+
+			it { should respond_with 422 }
+		end	
+
+	end

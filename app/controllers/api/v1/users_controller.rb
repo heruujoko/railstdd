@@ -15,6 +15,18 @@ class Api::V1::UsersController < ApplicationController
 			}
 			render :json => data, status: 422
 		end	
+	end
+
+	def update
+		user = User.find(params[:id])
+		if user.update(user_params)
+			render :json => user, status: 200, location: [:api, user]
+		else
+			data = {
+				errors: user.errors
+			}
+			render :json => data , status: 422
+		end	
 	end	
 
 	private 
