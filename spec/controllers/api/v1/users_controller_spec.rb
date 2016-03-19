@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Api::V1::UsersController do
 
 	before(:each) {request.headers['Accept'] = 'applicatiion/vnd.marketplace.v1'}
+	before(:each) {request.headers['Content-Type'] = Mime::JSON.to_s}
 
 	describe "GET #show" do
 		before(:each) do 
